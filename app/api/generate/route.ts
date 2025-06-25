@@ -1,4 +1,4 @@
-import { openai } from '@ai-sdk/openai';
+import { anthropic } from '@ai-sdk/anthropic';
 import { generateText } from 'ai';
 import { NextResponse } from 'next/server';
 
@@ -29,7 +29,7 @@ For hawker meals, include brief tips like "ask for less rice" or "choose steamed
 
   try {
     const { text } = await generateText({
-      model: openai('gpt-3.5-turbo'),
+      model: anthropic('claude-3-haiku-20240307'),
       prompt,
     });
 

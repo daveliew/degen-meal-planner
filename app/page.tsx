@@ -60,7 +60,7 @@ export default function Home() {
     if (!mealPlan) return null;
     const days = mealPlan.split(/(?=DAY \d+:|Day \d+:)/i).filter(d => d.trim());
     return (
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {days.map((day, index) => {
           const lines = day.split('\n').filter(l => l.trim());
           const dayTitle = lines[0];
@@ -69,16 +69,16 @@ export default function Home() {
           return (
             <div 
               key={index} 
-              className="bg-white/10 backdrop-blur-sm p-4 rounded-lg hover:bg-white/15 transition-all duration-300 animate-fade-in-up"
+              className="bg-white/10 backdrop-blur-sm p-3 sm:p-4 lg:p-5 rounded-lg hover:bg-white/15 transition-all duration-300 animate-fade-in-up"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <h3 className="text-lg font-bold text-teal-400 mb-3 flex items-center gap-2">
-                <span className="w-8 h-8 bg-teal-500/20 rounded-full flex items-center justify-center text-sm">
+              <h3 className="text-base sm:text-lg font-bold text-teal-400 mb-2 sm:mb-3 flex items-center gap-2">
+                <span className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-500/20 rounded-full flex items-center justify-center text-xs sm:text-sm">
                   {index + 1}
                 </span>
-                {dayTitle.trim()}
+                <span className="truncate">{dayTitle.trim()}</span>
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 {meals.map((meal, mealIndex) => {
                   const isBreakfast = meal.toLowerCase().includes('breakfast');
                   const isLunch = meal.toLowerCase().includes('lunch');
@@ -86,9 +86,9 @@ export default function Home() {
                   const mealIcon = isBreakfast ? '🌅' : isLunch ? '☀️' : isDinner ? '🌙' : '🍽️';
                   
                   return (
-                    <div key={mealIndex} className="flex items-start gap-2">
-                      <span className="text-lg">{mealIcon}</span>
-                      <p className="text-gray-300 flex-1">{meal.trim()}</p>
+                    <div key={mealIndex} className="flex items-start gap-1.5 sm:gap-2">
+                      <span className="text-base sm:text-lg flex-shrink-0">{mealIcon}</span>
+                      <p className="text-xs sm:text-sm text-gray-300 flex-1 leading-relaxed">{meal.trim()}</p>
                     </div>
                   );
                 })}
@@ -101,113 +101,119 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 bg-pattern text-white flex flex-col items-center p-4 sm:p-6 md:p-8">
-      <header className="w-full max-w-4xl text-center mb-8">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
-          <span className="bg-gradient-to-r from-teal-400 to-blue-500 text-transparent bg-clip-text">
-            AI Meal Planner SG
-          </span>
-        </h1>
-        <p className="mt-2 text-lg text-gray-400">
-          Craft your perfect 7-day meal plan, localized for Singapore.
-        </p>
-      </header>
+    <div className="min-h-screen bg-gray-900 bg-pattern text-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        <header className="text-center mb-6 sm:mb-8 lg:mb-12 max-w-4xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold tracking-tight mb-2 sm:mb-4">
+            <span className="bg-gradient-to-r from-teal-400 to-blue-500 text-transparent bg-clip-text">
+              AI Meal Planner SG
+            </span>
+          </h1>
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-400 px-4 sm:px-0">
+            Craft your perfect 7-day meal plan, localized for Singapore.
+          </p>
+        </header>
 
-      <main className="w-full max-w-2xl">
-        <div className="bg-white/5 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-teal-500/10 p-3 rounded-full">
-              <User className="w-6 h-6 text-teal-400" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-100">Your Details</h2>
-          </div>
-          
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="relative">
-                <Weight className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="number"
-                  value={formData.weight}
-                  onChange={(e) => setFormData({...formData, weight: e.target.value})}
-                  className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
-                  placeholder="Weight (kg)"
-                />
+        <main className="max-w-7xl mx-auto">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto">
+            <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
+              <div className="bg-teal-500/10 p-2 sm:p-2.5 lg:p-3 rounded-full">
+                <User className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-teal-400" />
               </div>
-              <div className="relative">
-                <Scale className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="number"
-                  value={formData.height}
-                  onChange={(e) => setFormData({...formData, height: e.target.value})}
-                  className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
-                  placeholder="Height (cm)"
-                />
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-100">Your Details</h2>
+            </div>
+            
+            <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
+                <div className="relative">
+                  <Weight className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                  <input
+                    type="number"
+                    value={formData.weight}
+                    onChange={(e) => setFormData({...formData, weight: e.target.value})}
+                    className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 sm:py-3.5 text-sm sm:text-base focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
+                    placeholder="Weight (kg)"
+                  />
+                </div>
+                <div className="relative">
+                  <Scale className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                  <input
+                    type="number"
+                    value={formData.height}
+                    onChange={(e) => setFormData({...formData, height: e.target.value})}
+                    className="w-full bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 sm:py-3.5 text-sm sm:text-base focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
+                    placeholder="Height (cm)"
+                  />
+                </div>
               </div>
-            </div>
-            
-            <div className="relative">
-              <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <select
-                value={formData.activityLevel}
-                onChange={(e) => setFormData({...formData, activityLevel: e.target.value})}
-                className="w-full appearance-none bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
+                <div className="relative">
+                  <Activity className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                  <select
+                    value={formData.activityLevel}
+                    onChange={(e) => setFormData({...formData, activityLevel: e.target.value})}
+                    className="w-full appearance-none bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 sm:py-3.5 text-sm sm:text-base focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
+                  >
+                    <option value="low">Low (Little/no exercise)</option>
+                    <option value="medium">Medium (Exercise 2-3x/week)</option>
+                    <option value="high">High (Exercise 4-5x/week)</option>
+                  </select>
+                </div>
+                
+                <div className="relative">
+                  <Goal className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                  <select
+                    value={formData.goal}
+                    onChange={(e) => setFormData({...formData, goal: e.target.value})}
+                    className="w-full appearance-none bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 sm:py-3.5 text-sm sm:text-base focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
+                  >
+                    <option value="lose">Lose Weight</option>
+                    <option value="maintain">Maintain Weight</option>
+                    <option value="gain">Gain Muscle</option>
+                  </select>
+                </div>
+              </div>
+              
+              <button
+                onClick={generateMealPlan}
+                disabled={loading || !formData.weight || !formData.height}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white font-semibold sm:font-bold py-3 sm:py-3.5 lg:py-4 px-4 text-sm sm:text-base rounded-lg hover:from-teal-600 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
               >
-                <option value="low">Low (Little/no exercise)</option>
-                <option value="medium">Medium (Exercise 2-3x/week)</option>
-                <option value="high">High (Exercise 4-5x/week)</option>
-              </select>
+                {loading ? (
+                  <>
+                    <Loader className="animate-spin w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>Generating Plan...</span>
+                  </>
+                ) : (
+                  <>
+                    <Bot className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>Generate 7-Day Meal Plan</span>
+                  </>
+                )}
+              </button>
             </div>
-            
-            <div className="relative">
-              <Goal className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <select
-                value={formData.goal}
-                onChange={(e) => setFormData({...formData, goal: e.target.value})}
-                className="w-full appearance-none bg-gray-800/50 border border-gray-700 rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-teal-500 focus:outline-none transition-colors"
-              >
-                <option value="lose">Lose Weight</option>
-                <option value="maintain">Maintain Weight</option>
-                <option value="gain">Gain Muscle</option>
-              </select>
-            </div>
-            
-            <button
-              onClick={generateMealPlan}
-              disabled={loading || !formData.weight || !formData.height}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:from-teal-600 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
-            >
-              {loading ? (
-                <>
-                  <Loader className="animate-spin w-5 h-5" />
-                  Generating Plan...
-                </>
-              ) : (
-                <>
-                  <Bot className="w-5 h-5" />
-                  Generate 7-Day Meal Plan
-                </>
-              )}
-            </button>
           </div>
-        </div>
 
-        {mealPlan && (
-          <div className="mt-8 bg-white/5 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8">
-            <div className="flex items-center gap-4 mb-6">
-              <div className="bg-teal-500/10 p-3 rounded-full">
-                <FileText className="w-6 h-6 text-teal-400" />
+          {mealPlan && (
+            <div className="mt-6 sm:mt-8 lg:mt-12">
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8">
+                <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
+                  <div className="bg-teal-500/10 p-2 sm:p-2.5 lg:p-3 rounded-full">
+                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-teal-400" />
+                  </div>
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-100">Your 7-Day Meal Plan</h2>
+                </div>
+                {renderMealPlan()}
               </div>
-              <h2 className="text-2xl font-bold text-gray-100">Your 7-Day Meal Plan</h2>
             </div>
-            {renderMealPlan()}
-          </div>
-        )}
-      </main>
-      
-      <footer className="w-full max-w-4xl text-center mt-8 text-gray-500 text-sm">
-        <p>Powered by Degen AI • Built for Healthy Degens</p>
-      </footer>
+          )}
+        </main>
+        
+        <footer className="text-center mt-8 sm:mt-12 lg:mt-16 text-gray-500 text-xs sm:text-sm">
+          <p>Powered by Degen AI • Built for Healthy Degens</p>
+        </footer>
+      </div>
     </div>
   );
 }
