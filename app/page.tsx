@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Weight, Scale, Activity, Goal, Bot, Send, Loader, User, FileText } from 'lucide-react';
+import { Weight, Scale, Activity, Goal, Bot, Loader, User, FileText } from 'lucide-react';
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -58,19 +58,41 @@ export default function Home() {
   
   const renderMealPlan = () => {
     if (!mealPlan) return null;
-    const days = mealPlan.split(/(?=Day \d+:)/).filter(d => d.trim());
+    const days = mealPlan.split(/(?=DAY \d+:|Day \d+:)/i).filter(d => d.trim());
     return (
       <div className="space-y-4">
         {days.map((day, index) => {
-          const [dayTitle, ...meals] = day.split('\n');
+          const lines = day.split('\n').filter(l => l.trim());
+          const dayTitle = lines[0];
+          const meals = lines.slice(1);
+          
           return (
-            <div key={index} className="bg-white/10 p-4 rounded-lg">
-              <h3 className="text-lg font-bold text-teal-400 mb-2">{dayTitle.trim()}</h3>
-              <ul className="space-y-1">
-                {meals.filter(m => m.trim()).map((meal, mealIndex) => (
-                  <li key={mealIndex} className="text-gray-300">{meal.trim()}</li>
-                ))}
-              </ul>
+            <div 
+              key={index} 
+              className="bg-white/10 backdrop-blur-sm p-4 rounded-lg hover:bg-white/15 transition-all duration-300 animate-fade-in-up"
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <h3 className="text-lg font-bold text-teal-400 mb-3 flex items-center gap-2">
+                <span className="w-8 h-8 bg-teal-500/20 rounded-full flex items-center justify-center text-sm">
+                  {index + 1}
+                </span>
+                {dayTitle.trim()}
+              </h3>
+              <div className="space-y-2">
+                {meals.map((meal, mealIndex) => {
+                  const isBreakfast = meal.toLowerCase().includes('breakfast');
+                  const isLunch = meal.toLowerCase().includes('lunch');
+                  const isDinner = meal.toLowerCase().includes('dinner');
+                  const mealIcon = isBreakfast ? '🌅' : isLunch ? '☀️' : isDinner ? '🌙' : '🍽️';
+                  
+                  return (
+                    <div key={mealIndex} className="flex items-start gap-2">
+                      <span className="text-lg">{mealIcon}</span>
+                      <p className="text-gray-300 flex-1">{meal.trim()}</p>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           );
         })}
@@ -79,7 +101,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen bg-gray-900 bg-pattern text-white flex flex-col items-center p-4 sm:p-6 md:p-8">
       <header className="w-full max-w-4xl text-center mb-8">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight">
           <span className="bg-gradient-to-r from-teal-400 to-blue-500 text-transparent bg-clip-text">
@@ -184,7 +206,7 @@ export default function Home() {
       </main>
       
       <footer className="w-full max-w-4xl text-center mt-8 text-gray-500 text-sm">
-        <p>Powered by Degen AI</p>
+        <p>Powered by Degen AI • Built for Healthy Degens</p>
       </footer>
     </div>
   );
