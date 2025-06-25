@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Weight, Scale, Activity, Goal, Bot, Loader, User, FileText } from 'lucide-react';
+import { Weight, Scale, Activity, Goal, Bot, Loader, User, FileText, X, ChefHat } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,12 @@ export default function Home() {
   });
   const [mealPlan, setMealPlan] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedMeal, setSelectedMeal] = useState<{name: string; day: string; type: string} | null>(null);
+  const [mealDetails, setMealDetails] = useState<{recipe: string; image: string; loading: boolean}>({
+    recipe: '',
+    image: '',
+    loading: false
+  });
 
   const calculateCalories = () => {
     const weight = parseFloat(formData.weight);
@@ -55,6 +62,33 @@ export default function Home() {
     
     setLoading(false);
   };
+
+  const fetchMealDetails = async (mealName: string, day: string, type: string) => {
+    setSelectedMeal({ name: mealName, day, type });
+    setMealDetails({ recipe: '', image: '', loading: true });
+    
+    try {
+      const response = await fetch('/api/meal-details', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mealName }),
+      });
+      
+      const data = await response.json();
+      setMealDetails({
+        recipe: data.recipe,
+        image: data.image,
+        loading: false
+      });
+    } catch (error) {
+      console.error('Error fetching meal details:', error);
+      setMealDetails({
+        recipe: 'Failed to load recipe',
+        image: '',
+        loading: false
+      });
+    }
+  };
   
   const renderMealPlan = () => {
     if (!mealPlan) return null;
@@ -85,8 +119,15 @@ export default function Home() {
                   const isDinner = meal.toLowerCase().includes('dinner');
                   const mealIcon = isBreakfast ? '🌅' : isLunch ? '☀️' : isDinner ? '🌙' : '🍽️';
                   
+                  const mealName = meal.split('(')[0].trim().replace(/^(Breakfast|Lunch|Dinner):\s*/i, '');
+                  const mealType = isBreakfast ? 'Breakfast' : isLunch ? 'Lunch' : isDinner ? 'Dinner' : 'Meal';
+                  
                   return (
-                    <div key={mealIndex} className="flex items-start gap-1.5 sm:gap-2">
+                    <div 
+                      key={mealIndex} 
+                      className="flex items-start gap-1.5 sm:gap-2 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors"
+                      onClick={() => fetchMealDetails(mealName, dayTitle.trim(), mealType)}
+                    >
                       <span className="text-base sm:text-lg flex-shrink-0">{mealIcon}</span>
                       <p className="text-xs sm:text-sm text-gray-300 flex-1 leading-relaxed">{meal.trim()}</p>
                     </div>
@@ -214,6 +255,64 @@ export default function Home() {
           <p>Powered by Degen AI • Built for Healthy Degens</p>
         </footer>
       </div>
+
+      {/* Meal Details Modal */}
+      {selectedMeal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedMeal(null)}>
+          <div 
+            className="bg-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-6 border-b border-gray-800">
+              <div>
+                <h3 className="text-2xl font-bold text-white">{selectedMeal.name}</h3>
+                <p className="text-sm text-gray-400 mt-1">{selectedMeal.day} • {selectedMeal.type}</p>
+              </div>
+              <button
+                onClick={() => setSelectedMeal(null)}
+                className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+              {mealDetails.loading ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader className="animate-spin w-8 h-8 text-teal-400 mb-4" />
+                  <p className="text-gray-400">Loading recipe...</p>
+                </div>
+              ) : (
+                <>
+                  {mealDetails.image && (
+                    <div className="relative w-full h-64 mb-6 rounded-xl overflow-hidden">
+                      <Image
+                        src={mealDetails.image}
+                        alt={selectedMeal.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-teal-400 mb-4">
+                      <ChefHat className="w-5 h-5" />
+                      <h4 className="text-lg font-semibold">Recipe</h4>
+                    </div>
+                    
+                    <div className="prose prose-invert max-w-none">
+                      <div className="whitespace-pre-wrap text-gray-300 leading-relaxed">
+                        {mealDetails.recipe}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
